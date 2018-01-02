@@ -6,15 +6,18 @@ import numpy as np
 import datetime as dt
 import sys
 import time
+import collections
+import pprint
 
 
-class DataArray:
+class super_list:
     datafiledir = None
     datafilename = None
     haveheader = True
     fileheader = []
     filecontent = []
     filelenth = 0
+
 
     def __init__(self, datafiledir=os.path.join('..' + os.sep + 'data'), datafilename='train.csv', haveheader=True):
         self.datafiledir = datafiledir
@@ -39,13 +42,25 @@ class DataArray:
     def get_file_content(self):
         return self.filecontent
 
-    def get_top_list(self, include_header=True, skip=0, limit=None):
-        topList = []
-        if include_header is True and self.haveheader is True:
-            topList.append(self.fileheader)
+    def get_top_list(self, skip=0, limit=None, f=lambda row:True):
+        filteredlist = list(filter(f,self.filecontent))
+        limitedlist = filteredlist[skip:len(filteredlist) if limit is None else limit + skip]
+        return limitedlist
 
-        topList += self.filecontent[skip:self.filelength if limit is None else limit + skip]
-        return topList
+    def get_content_len(self):
+        return len(self.filecontent)
 
-    def __del__(self):
-        print('add code to clear')
+    def group_by_coulumn(self, columnNum=0):
+
+        a = np.array(self.filecontent)
+
+        d = collections.Counter(self.filecontent)
+        for k in d.keys():
+            print(k)
+
+    def print_summary_list(self, ls=[]):
+        pprint.pprint(ls)
+        print('Amount for target list is ' + str(len(ls)))
+
+    # def __del__(self):
+        # print('add code to clear')
